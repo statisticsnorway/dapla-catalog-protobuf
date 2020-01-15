@@ -51,6 +51,7 @@ message GetByNameDatasetResponse {
 
 message ListByPrefixRequest {
     string prefix = 1;
+    int32 limit = 2;
 }
 
 message NameAndIdEntry {
