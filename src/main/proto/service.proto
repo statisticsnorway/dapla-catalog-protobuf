@@ -10,6 +10,7 @@ service CatalogService {
     rpc UnmapName (UnmapNameRequest) returns (UnmapNameResponse);
     rpc GetById (GetByIdDatasetRequest) returns (GetByIdDatasetResponse);
     rpc GetByName (GetByNameDatasetRequest) returns (GetByNameDatasetResponse);
+    rpc ListByPrefix (ListByPrefixRequest) returns (ListByPrefixResponse);
     rpc Save (SaveDatasetRequest) returns (SaveDatasetResponse);
     rpc Delete (DeleteDatasetRequest) returns (DeleteDatasetResponse);
 }
@@ -46,6 +47,19 @@ message GetByNameDatasetRequest {
 
 message GetByNameDatasetResponse {
     Dataset dataset = 1;
+}
+
+message ListByPrefixRequest {
+    string prefix = 1;
+}
+
+message NameAndIdEntry {
+    repeated string name = 1;
+    string id = 2;
+}
+
+message ListByPrefixResponse {
+    repeated NameAndIdEntry entries = 1;
 }
 
 message SaveDatasetRequest {
