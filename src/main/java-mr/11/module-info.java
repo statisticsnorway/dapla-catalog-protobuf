@@ -7,4 +7,5 @@ module no.ssb.dapla.catalog.protobuf {
     requires java.annotation;
 
     exports no.ssb.dapla.catalog.protobuf;
+    opens no.ssb.dapla.catalog.protobuf;
 }
