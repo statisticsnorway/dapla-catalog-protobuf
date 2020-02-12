@@ -28,10 +28,20 @@ message Dataset {
     }
     DatasetState state = 6;
     repeated string locations = 8;
-    repeated PseudoConfigItem pseudoConfig = 10;
+
+    PseudoConfig pseudoConfig = 10;
 }
 
-message PseudoConfigItem {
-    string col = 1;
+message VarPseudoConfigItem {
+    string var = 1;
     string pseudoFunc = 2;
+}
+
+message SecretPseudoConfigItem {
+    string id = 1;
+}
+
+message PseudoConfig {
+    repeated VarPseudoConfigItem vars = 1;
+    repeated SecretPseudoConfigItem secrets = 2;
 }
