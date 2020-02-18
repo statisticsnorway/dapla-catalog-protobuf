@@ -10,6 +10,11 @@ message DatasetId {
 
 message Dataset {
     DatasetId id = 2;
+    enum Type {
+        BOUNDED = 0;
+        UNBOUNDED = 1;
+    }
+    Type type = 3;
     enum Valuation {
         SENSITIVE = 0;
         SHIELDED = 1;
