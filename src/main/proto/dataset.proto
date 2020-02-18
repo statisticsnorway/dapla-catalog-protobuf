@@ -31,7 +31,7 @@ message Dataset {
         PRODUCT = 5;
     }
     DatasetState state = 6;
-    string physicalLocation = 8;
+    string parentUri = 8;
 
     PseudoConfig pseudoConfig = 10;
 }
