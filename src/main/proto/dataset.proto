@@ -41,11 +41,6 @@ message VarPseudoConfigItem {
     string pseudoFunc = 2;
 }
 
-message SecretPseudoConfigItem {
-    string id = 1;
-}
-
 message PseudoConfig {
     repeated VarPseudoConfigItem vars = 1;
-    repeated SecretPseudoConfigItem secrets = 2;
 }
