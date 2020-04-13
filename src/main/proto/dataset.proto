@@ -29,6 +29,7 @@ message Dataset {
         PROCESSED = 3;
         OUTPUT = 4;
         PRODUCT = 5;
+        TEMP = 6;
     }
     DatasetState state = 6;
     string parentUri = 8;
