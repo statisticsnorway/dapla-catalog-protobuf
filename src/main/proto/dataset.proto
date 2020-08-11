@@ -22,6 +22,11 @@ message Dataset {
         OPEN = 3;
     }
     Valuation valuation = 4;
+    enum IsDirty {
+        DIRTY = 0;
+        CLEAN = 1;
+    }
+    IsDirty isDirty = 5;
     enum DatasetState {
         OTHER = 0;
         RAW = 1;
