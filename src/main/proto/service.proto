@@ -10,6 +10,7 @@ service CatalogService {
     rpc get (GetDatasetRequest) returns (GetDatasetResponse);
     rpc save (SaveDatasetRequest) returns (SaveDatasetResponse);
     rpc delete (DeleteDatasetRequest) returns (DeleteDatasetResponse);
+    rpc pollute (PolluteDatasetRequest) returns (PolluteDatasetResponse);
 }
 
 message GetDatasetRequest {
@@ -43,4 +44,11 @@ message DeleteDatasetRequest {
 }
 
 message DeleteDatasetResponse {
+}
+
+message PolluteDatasetRequest {
+    string path = 1;
+}
+
+message PolluteDatasetResponse {
 }
