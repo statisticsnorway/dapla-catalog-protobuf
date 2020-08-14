@@ -10,7 +10,7 @@ service CatalogService {
     rpc get (GetDatasetRequest) returns (GetDatasetResponse);
     rpc save (SaveDatasetRequest) returns (SaveDatasetResponse);
     rpc delete (DeleteDatasetRequest) returns (DeleteDatasetResponse);
-    rpc pollute (PolluteDatasetRequest) returns (PolluteDatasetResponse);
+    rpc setDataCreationState (DataCreationStateRequest) returns (DataCreationStateResponse);
 }
 
 message GetDatasetRequest {
@@ -46,9 +46,10 @@ message DeleteDatasetRequest {
 message DeleteDatasetResponse {
 }
 
-message PolluteDatasetRequest {
+message DataCreationStateRequest {
     string path = 1;
+    Dataset.IsWriteInProgress isWriteInProgress = 2;
 }
 
-message PolluteDatasetResponse {
+message DataCreationStateResponse {
 }
