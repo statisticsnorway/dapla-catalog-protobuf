@@ -10,7 +10,7 @@ trigger:
 
 resources:
   containers:
-  - container: 'ubuntu_container_for_tests'
+  - container: 'ubuntu_container_for_build_deply_to_nexus'
     image: 'ubuntu:latest'
 
 # Pipeline will be run on this base image
@@ -31,11 +31,10 @@ variables:
 
 
 
-# Job which runs mvn test and verify, mvn install,
-# builds Docker image, pushes this to GCR and checks for any image vulnerabilities
+# Job which runs mvn build, mvn install,
 jobs:
-  - job: buildTestDockerBuildDockerPush
-    displayName: 'Test/build app and Dockerimage'
+  - job: buildTest
+    displayName: 'Test/build app'
     # Job condition: Run these jobs on any branch, but not on tags
     condition: not(startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
     # Steps in this Job
