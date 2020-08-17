@@ -56,9 +56,9 @@ jobs:
             maven
           path: $(MAVEN_CACHE_FOLDER)
 
-      # Deploy artifact to Nexus
+      # Compile artifact to Nexus
       - task: Maven@3
-        displayName: 'Maven install and deploy'
+        displayName: 'Maven test'
         inputs:
           mavenPomFile: 'pom.xml'
           mavenOptions: '-Xmx3072m'
@@ -67,5 +67,18 @@ jobs:
           jdkArchitectureOption: 'x64'
           publishJUnitResults: false
           testResultsFiles: '**/TEST-*.xml'
+          goals: 'compile'
+          options: '-U -P ssb-bip --batch-mode -Djdk.tls.client.protocols="TLSv1.2" $(MAVEN_OPTS)'
+
+      # Deploy artifact to Nexus
+      - task: Maven@3
+        displayName: 'Maven deploy'
+        inputs:
+          mavenPomFile: 'pom.xml'
+          mavenOptions: '-Xmx3072m'
+          javaHomeOption: 'JDKVersion'
+          jdkVersionOption: '1.11'
+          jdkArchitectureOption: 'x64'
+          publishJUnitResults: false
           goals: 'deploy'
           options: '-DskipTests=true -Dmaven.javadoc.skip=true -U -P ssb-bip --batch-mode -Djdk.tls.client.protocols="TLSv1.2" $(MAVEN_OPTS)'
