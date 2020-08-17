@@ -56,18 +56,6 @@ jobs:
             maven
           path: $(MAVEN_CACHE_FOLDER)
 
-      # Compile artifact to Nexus
-      - task: Maven@3
-        displayName: 'Maven compile'
-        inputs:
-          mavenPomFile: 'pom.xml'
-          mavenOptions: '-Xmx3072m'
-          javaHomeOption: 'JDKVersion'
-          jdkVersionOption: '1.11'
-          jdkArchitectureOption: 'x64'
-          publishJUnitResults: false
-          goals: 'compile'
-
       # Deploy artifact to Nexus
       - task: Maven@3
         displayName: 'Maven deploy'
