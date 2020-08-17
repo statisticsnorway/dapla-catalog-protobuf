@@ -46,10 +46,39 @@ variables:
 # Job which runs mvn test and verify, Sonar Analysis (if branch is master), mvn install,
 # builds Docker image, pushes this to GCR and checks for any image vulnerabilities
 jobs:
-  - template: complete-builds/job-test-integration-coverage-build-gcr.yml@templates
-    parameters:
-      project: dapla
-      imageName: dapla-catalog-protobuf
+  - job: buildTestDockerBuildDockerPush
+    displayName: 'Test/build app and Dockerimage'
+    # Job condition: Run these jobs on any branch, but not on tags
+    condition: not(startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
+    # Steps in this Job
+    steps:
+      # Authenticate Maven to Nexus using predefined Service Connections
+      # (Project Settings->Pipelines->Service Connections)
+      - task: MavenAuthenticate@0
+        displayName: 'Maven authenticate'
+        inputs:
+          mavenServiceConnections: 'mvnSsbBipPublic, mvnSsbBipReleases, mvnSsbBipSnapshots'
+
+      #Maven caching to speed up pipeline build time
+      - task: Cache@2
+        displayName: Cache Maven local repo
+        inputs:
+          key: 'maven | "$(Agent.OS)" | **/pom.xml'
+          restoreKeys: |
+            maven | "$(Agent.OS)"
+            maven
+          path: $(MAVEN_CACHE_FOLDER)
+
+      - template: ${{variables['System.DefaultWorkingDirectory']}}/maven/task-test-and-verify.yml
+
+      - template: ${{variables['System.DefaultWorkingDirectory']}}/maven/task-sonar-analyze.yml
+
+      - template: ${{variables['System.DefaultWorkingDirectory']}}/maven/task-install-and-deploy-to-nexus.yml
+
+      - template: ${{variables['System.DefaultWorkingDirectory']}}/docker/docker-build-image-and-push-to-gcr.yml
+        parameters:
+          project: ${{ parameters.project }}
+          imageName: ${{ parameters.imageName }}
 
   # Job which pulls the Docker image with the correct tag (image-scan-tag) from GCR, tags this
   # with the git tag, and pushes that back to GCR.
