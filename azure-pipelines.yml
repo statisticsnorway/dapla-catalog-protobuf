@@ -69,16 +69,109 @@ jobs:
             maven
           path: $(MAVEN_CACHE_FOLDER)
 
-      - template: ${{variables['System.DefaultWorkingDirectory']}}/maven/task-test-and-verify.yml
+      - task: Maven@3
+        displayName: 'Maven test and verify'
+        inputs:
+          mavenPomFile: 'pom.xml'
+          goals: 'verify test'
+          options: '-P ssb-bip,coverage --batch-mode $(MAVEN_OPTS)'
+          publishJUnitResults: true
+          testResultsFiles: '**/TEST-*.xml'
+          codeCoverageToolOption: 'JaCoCo'
+          javaHomeOption: 'JDKVersion'
+          jdkVersionOption: '1.11'
+          mavenVersionOption: 'Default'
+          mavenOptions: '-Xmx3072m'
+          mavenAuthenticateFeed: false
+          effectivePomSkip: false
+          sonarQubeRunAnalysis: false
+          checkStyleRunAnalysis: true
+          pmdRunAnalysis: true
 
-      - template: ${{variables['System.DefaultWorkingDirectory']}}/maven/task-sonar-analyze.yml
+      - task: Maven@3
+        displayName: 'Maven Sonar Analysis'
+        # Task condition: We have community edition of SonarQube which only scans master-branch so
+        # it makes no sense running this tag when branch is other than master
+        condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+        inputs:
+          mavenPomFile: 'pom.xml'
+          goals: 'sonar:sonar'
+          options: '-X -Dsonar.host.url=$(SONAR_HOST) -Dsonar.login=$(SONAR_TOKEN) sonar:sonar -P ssb-bip,coverage -Dmaven.javadoc.skip=true --batch-mode $(MAVEN_OPTS)'
+          publishJUnitResults: false
+          testResultsFiles: '**/TEST-*.xml'
+          javaHomeOption: 'JDKVersion'
+          jdkVersionOption: '1.11'
+          mavenVersionOption: 'Default'
+          mavenOptions: '-Xmx3072m'
+          mavenAuthenticateFeed: false
+          effectivePomSkip: false
+          sonarQubeRunAnalysis: false
+          checkStyleRunAnalysis: false
+          pmdRunAnalysis: false
+          findBugsRunAnalysis: false
 
-      - template: ${{variables['System.DefaultWorkingDirectory']}}/maven/task-install-and-deploy-to-nexus.yml
+      - task: Maven@3
+        displayName: 'Maven install and deploy'
+        inputs:
+          mavenPomFile: 'pom.xml'
+          mavenOptions: '-Xmx3072m'
+          javaHomeOption: 'JDKVersion'
+          jdkVersionOption: '1.11'
+          jdkArchitectureOption: 'x64'
+          publishJUnitResults: false
+          testResultsFiles: '**/TEST-*.xml'
+          goals: 'deploy'
+          options: '-DskipTests=true -Dmaven.javadoc.skip=true -U -P ssb-bip --batch-mode -Djdk.tls.client.protocols="TLSv1.2" $(MAVEN_OPTS)'
+      # Build Docker image
+      - task: Docker@2
+        displayName: 'Docker build'
+        inputs:
+          repository: $(imageName)
+          command: 'build'
+          Dockerfile: 'Dockerfile'
+          tags: |
+            $(Build.SourceBranchName)-imagescan-$(fullSha)
+      # Authenticate Docker to GCR using predefined service connection
+      - task: Docker@2
+        displayName: 'Login to GCR'
+        inputs:
+          command: login
+          containerRegistry: gcrServiceConnection
 
-      - template: ${{variables['System.DefaultWorkingDirectory']}}/docker/docker-build-image-and-push-to-gcr.yml
-        parameters:
-          project: ${{ parameters.project }}
-          imageName: ${{ parameters.imageName }}
+      # Push Docker Image to GCR
+      - task: Docker@2
+        displayName: 'Push image'
+        inputs:
+          ContainerRegistry: |
+            gcrServiceConnection
+          repository: $(repoName)
+          command: 'push'
+          tags: |
+            $(Build.SourceBranchName)-imagescan-$(fullSha)
+      # Download file with json-key to GCR as a later task needs to
+      # authenticate in a different way than using service connection
+      # File is stored in Pipelines->Library->Secure Files
+      - task: DownloadSecureFile@1
+        name: gcrJsonKey
+        displayName: 'Download gcr creds'
+        inputs:
+          secureFile: 'gcr-key.json'
+
+      # Set env variable pointing to the file downloaded in previous task
+      # as a library in next task needs this env variable
+      - script: |
+          echo "Setting env variable GOOGLE_APPLICATION_CREDENTIALS"
+          echo "##vso[task.setvariable variable=GOOGLE_APPLICATION_CREDENTIALS]$(gcrJsonKey.secureFilePath)"
+        displayName: 'Setting GOOGLE_APPLICATION_CREDENTIALS env variable'
+      # Wait for scan on image in GCR to complete and check for any vulnerabilities
+      # with effective severity HIGH or CRITICAL
+      - task: gcr-vulneralbility-check@0
+        displayName: 'Image vulnerability check'
+        inputs:
+          projectId: 'prod-bip'
+          imageHost: 'https://eu.gcr.io/'
+          image: 'prod-bip/ssb/${{ parameters.project }}/${{ parameters.imageName }}'
+          imageTag: '$(Build.SourceBranchName)-imagescan-$(fullSha)'
 
   # Job which pulls the Docker image with the correct tag (image-scan-tag) from GCR, tags this
   # with the git tag, and pushes that back to GCR.
