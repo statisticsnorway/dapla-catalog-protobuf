@@ -24,12 +24,6 @@ variables:
   # Azure Pipelines
   - group: Hemmeligheter
   # Variables defined here
-  - name: fullSha
-    value: '$(Build.SourceVersion)'
-  - name: imageName
-    value: 'eu.gcr.io/prod-bip/ssb/dapla/dapla-catalog-protobuf'
-  - name: repoName
-    value: 'prod-bip/ssb/dapla/dapla-catalog-protobuf'
   - name:  MAVEN_CACHE_FOLDER
     value: $(Pipeline.Workspace)/.m2/repository
   - name: MAVEN_OPTS
