@@ -10,8 +10,8 @@ trigger:
 
 resources:
   containers:
-  - container: 'postgres_container_for_tests'
-    image: 'postgres:12-alpine'
+  - container: 'ubuntu_container_for_tests'
+    image: 'ubuntu:latest'
 
 # Pipeline will be run on this base image
 pool:
