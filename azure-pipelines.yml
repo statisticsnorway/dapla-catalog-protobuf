@@ -51,3 +51,11 @@ jobs:
       project: dapla
       imageName: dapla-catalog-protobuf
 
+  # Job which pulls the Docker image with the correct tag (image-scan-tag) from GCR, tags this
+  # with the git tag, and pushes that back to GCR.
+  # The job triggers when any tag was committed to GitHub, which means all tags in
+  # the code repo are propagated to the corresponding (newly built) image in GCR.
+  - template: docker/docker-tag-for-production.yml@templates
+    parameters:
+      tagToTag: dapla-catalog-protobuf
+      gcrImageName: ${{ variables.imageName }}
