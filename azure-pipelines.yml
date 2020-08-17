@@ -10,7 +10,7 @@ trigger:
 
 resources:
   containers:
-    - container: 'maven_container_for_tests'
+    - container: 'ubuntu:latest'
       image: maven:3-jdk-11
   repositories:
     - repository: templates
