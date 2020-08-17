@@ -34,7 +34,7 @@ variables:
 # Job which runs mvn build, mvn install,
 jobs:
   - job: buildTest
-    displayName: 'Test/build app'
+    displayName: 'compile deploy app'
     # Job condition: Run these jobs on any branch, but not on tags
     condition: not(startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
     # Steps in this Job
@@ -58,7 +58,7 @@ jobs:
 
       # Compile artifact to Nexus
       - task: Maven@3
-        displayName: 'Maven test'
+        displayName: 'Maven compile'
         inputs:
           mavenPomFile: 'pom.xml'
           mavenOptions: '-Xmx3072m'
