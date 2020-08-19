@@ -45,3 +45,9 @@ message VarPseudoConfigItem {
 message PseudoConfig {
     repeated VarPseudoConfigItem vars = 1;
 }
+
+message SignedDataset {
+    Dataset dataset = 1;
+    bytes datasetMetaBytes = 2;
+    bytes datasetMetaSignatureBytes = 3;
+}
