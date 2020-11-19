@@ -3,7 +3,7 @@
 
     <groupId>no.ssb.dapla.catalog</groupId>
     <artifactId>dapla-catalog-protobuf</artifactId>
-    <version>0.8-SNAPSHOT</version>
+    <version>0.8</version>
     <packaging>multi-release-jar</packaging>
     <name>${project.artifactId}</name>
 
@@ -23,7 +23,7 @@
         <connection>scm:git:git://github.com/statisticsnorway/dapla-catalog-protobuf.git</connection>
         <developerConnection>scm:git:git@github.com:statisticsnorway/dapla-catalog-protobuf.git</developerConnection>
         <url>https://github.com/statisticsnorway/dapla-catalog-protobuf</url>
-        <tag>HEAD</tag>
+        <tag>dapla-catalog-protobuf-0.8</tag>
     </scm>
 
     <dependencies>
