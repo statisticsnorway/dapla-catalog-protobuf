@@ -47,8 +47,6 @@ message PseudoConfig {
 }
 
 message SignedDataset {
-    Dataset dataset = 1;
-    string userId = 2;
-    bytes datasetMetaBytes = 3;
-    bytes datasetMetaSignatureBytes = 4;
+    bytes datasetMetaAllBytes = 3;
+    bytes datasetMetaAllSignatureBytes = 4;
 }
