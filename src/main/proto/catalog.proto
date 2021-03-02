@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+import "table.proto";
+
+option java_multiple_files = true;
+option java_package = "no.ssb.dapla.catalog.protobuf";
+
+
+message GetTableRequest {
+    string path = 1;
+}
+
+message GetTableResponse {
+    CatalogTable table = 1;
+}
+
+message CreateTableRequest {
+    CatalogTable table = 1;
+}
+
+message CreateTableResponse {
+}
+
+message UpdateTableRequest {
+    CatalogTable table = 1;
+    string previousMetadataLocation = 2;
+}
+
+message UpdateTableResponse {
+}
