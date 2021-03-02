@@ -30,14 +30,6 @@ message ListByPrefixResponse {
     repeated DatasetId entries = 1;
 }
 
-message SaveDatasetRequest {
-    Dataset dataset = 1;
-    string userId = 2;
-}
-
-message SaveDatasetResponse {
-}
-
 message DeleteDatasetRequest {
     string path = 1;
     int64 timestamp = 2;
